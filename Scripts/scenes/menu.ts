@@ -4,6 +4,7 @@ module scenes {
         //PRIVATE INSTANCE VARIABLES ++++++++++++
         private _playButton: objects.Button;
         private _welcomeLabel: objects.Label;
+        private _startupSound: objects.Sound;
         
         // CONSTRUCTOR ++++++++++++++++++++++
         constructor() {
@@ -38,6 +39,10 @@ module scenes {
             
             // add this scene to the global stage container
             stage.addChild(this);
+            
+            // Play the startup sound
+            this._startupSound = new objects.Sound('StartSound');
+            this._startupSound.play();
         }
 
         // INTRO Scene updates here

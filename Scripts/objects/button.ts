@@ -1,7 +1,8 @@
 ﻿module objects {
     export class Button extends createjs.Bitmap {
-        //PRIVATE INSTANCE VARIABLES
+        //PUBLIC INSTANCE VARIABLES
         public enabled: boolean;
+        
         //CONSTRUCTOR
         constructor(pathString:string, x:number, y: number, public isCentered: boolean) {
             super(assets.getResult(pathString));

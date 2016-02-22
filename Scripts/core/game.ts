@@ -37,7 +37,15 @@ var assetData:objects.Asset[] = [
     {id: "Coin", src:"../../Assets/images/coin.png"},
     {id: "Yoshi", src:"../../Assets/images/yoshi.png"},
     {id: "Mario", src:"../../Assets/images/mario.png"},
-    {id: "Star", src:"../../Assets/images/star.png"}
+    {id: "Star", src:"../../Assets/images/star.png"},
+    
+    // SFX
+    {id: "StartSound", src:"../../Assets/sound/start.wav"},
+    {id: "BetButtonSound", src:"../../Assets/sound/betButton.wav"},
+    {id: "JackpotSound", src:"../../Assets/sound/jackpot.wav"},
+    {id: "WinSound", src:"../../Assets/sound/win.wav"},
+    {id: "BigWinSound", src:"../../Assets/sound/bigWin.wav"},
+    {id: "LoseSound", src:"../../Assets/sound/lose.wav"},
 ];
 
 function preload() {

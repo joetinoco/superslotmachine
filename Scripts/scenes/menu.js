@@ -25,6 +25,9 @@ var scenes;
             this._playButton.on("click", this._startButtonClick, this);
             // add this scene to the global stage container
             stage.addChild(this);
+            // Play the startup sound
+            this._startupSound = new objects.Sound('StartSound');
+            this._startupSound.play();
         };
         // INTRO Scene updates here
         Menu.prototype.update = function () {

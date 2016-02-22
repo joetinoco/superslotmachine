@@ -13,6 +13,12 @@ module scenes {
         private _betsLabel: objects.Label;
         private _winsLabel: objects.Label;
         
+        private _betButtonSound: objects.Sound;
+        private _jackpotSound: objects.Sound;
+        private _winSound: objects.Sound;
+        private _bigWinSound: objects.Sound;
+        private _loseSound: objects.Sound;
+        
         private _reelReset: createjs.Bitmap;
         private _reelMask: createjs.Bitmap;
         private _reel1: objects.ReelItem[];
@@ -45,6 +51,7 @@ module scenes {
             
             this._backgroundImage = new createjs.Bitmap(assets.getResult('SlotMachine'));
             
+            // Bet buttons
             this._bet1Button = new objects.Button("Bet1Button", 15, 195, false);       
             this._bet1Button.on('click', this._bet1ButtonClick, this);   
            
@@ -52,16 +59,27 @@ module scenes {
             this._bet2Button.on('click', this._bet2ButtonClick, this);  
             
             this._bet3Button = new objects.Button("Bet3Button", 99, 195, false);
-            this._bet3Button.on('click', this._bet3ButtonClick, this);    
+            this._bet3Button.on('click', this._bet3ButtonClick, this);
             
+            this._betButtonSound = new objects.Sound('BetButtonSound');    
+            
+            // Spin button
             this._spinButton = new objects.Button("SpinButton", 159, 195, false);
             this._spinButton.on('click', this._spinButtonClick, this);
             
+            // Reset button
             this._resetButton = new objects.Button("ResetButton", 216, 218, false);
             this._resetButton.on('click', this._resetButtonClick, this);
-            
+
+            // Quit button            
             this._quitButton = new objects.Button("QuitButton", 264, 218, false);
             this._quitButton.on('click', this._quitButtonClick, this);
+            
+            // Winning/losing sounds
+            this._jackpotSound = new objects.Sound('JackpotSound');
+            this._bigWinSound = new objects.Sound('BigWinSound');
+            this._winSound = new objects.Sound('WinSound');
+            this._loseSound = new objects.Sound('LoseSound');
             
             // prepare reel refresh elements
             this._reelReset = new createjs.Bitmap(assets.getResult('ReelReset'));
@@ -262,19 +280,22 @@ module scenes {
         // EVENT HANDLERS +++++++++++++++
         private _bet1ButtonClick(event: createjs.MouseEvent): void {
             if (this._bet1Button.enabled){
-                if (this._money >= 1) this._placeBet(1);
+                this._betButtonSound.play();
+                this._placeBet(1);
             }
         }
         
         private _bet2ButtonClick(event: createjs.MouseEvent): void {
             if (this._bet2Button.enabled){
-                if (this._money >= 2) this._placeBet(2);
+                this._betButtonSound.play();
+                this._placeBet(2);
             }
         }
         
         private _bet3ButtonClick(event: createjs.MouseEvent): void {
             if (this._bet3Button.enabled){
-                if (this._money >= 3) this._placeBet(3);
+                this._betButtonSound.play();
+                this._placeBet(3);
             }
         }
         
@@ -297,19 +318,24 @@ module scenes {
                     this.addChild(this._reel3[i]);
                 }
                 
-                // Calculate earnings
+                // Calculate earnings & play SFX
                 var amountWon: number = this._calculateEarnings();
                 if (amountWon === SlotMachine.jackpotAmount){
                     // User won the jackpot
                     console.log('JACKPOT');
-                }
-                if (amountWon > 0){
+                    this._jackpotSound.play();
+                } else if (amountWon > 20){
+                    // User won big
+                    console.log('User won ' + amountWon);
+                    this._bigWinSound.play();
+                } else if (amountWon > 0){
                     // User won
                     console.log('User won ' + amountWon);
-                } 
-                else {
+                    this._winSound.play();
+                } else {
                     // User did not win
                     console.log('No win');
+                    this._loseSound.play();
                 }
             
             }
