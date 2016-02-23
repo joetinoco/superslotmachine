@@ -7,7 +7,12 @@
         constructor(pathString:string, x:number, y: number, public isCentered: boolean) {
             super(assets.getResult(pathString));
             this.x = x;
-            this.y = y; 
+            this.y = y;
+            
+            if (this.isCentered){
+                this.regX = this.getBounds().width * 0.5;
+                this.regY = this.getBounds().height * 0.5;
+            } 
 
             this.on("mouseover", this.overButton, this);
             this.on("mouseout", this.outButton, this);

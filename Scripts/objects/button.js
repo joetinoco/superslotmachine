@@ -13,6 +13,10 @@ var objects;
             this.isCentered = isCentered;
             this.x = x;
             this.y = y;
+            if (this.isCentered) {
+                this.regX = this.getBounds().width * 0.5;
+                this.regY = this.getBounds().height * 0.5;
+            }
             this.on("mouseover", this.overButton, this);
             this.on("mouseout", this.outButton, this);
             this.enabled = true;

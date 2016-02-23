@@ -16,6 +16,10 @@ var gameOver: scenes.GameOver;
 
 
 var assetData:objects.Asset[] = [
+    // Title and game over screen
+    {id: "TitleScreen", src:"../../Assets/images/TitleScreen.png"},
+    {id: "GameOverScreen", src:"../../Assets/images/GameOverScreen.png"},
+    
     // Buttons
     {id: "PlayButton", src:"../../Assets/images/PlayButton.png"},
     {id: "ResetButton", src:"../../Assets/images/ResetButton.png"},
@@ -38,14 +42,21 @@ var assetData:objects.Asset[] = [
     {id: "Yoshi", src:"../../Assets/images/yoshi.png"},
     {id: "Mario", src:"../../Assets/images/mario.png"},
     {id: "Star", src:"../../Assets/images/star.png"},
+    {id: "Spin1", src:"../../Assets/images/spin1.png"},
+    {id: "Spin2", src:"../../Assets/images/spin2.png"},
+    {id: "Spin3", src:"../../Assets/images/spin3.png"},
+    
     
     // SFX
     {id: "StartSound", src:"../../Assets/sound/start.wav"},
+    {id: "SpinningSound", src:"../../Assets/sound/spinning.wav"},
+    {id: "StoppingSound", src:"../../Assets/sound/stopping.wav"},
     {id: "BetButtonSound", src:"../../Assets/sound/betButton.wav"},
     {id: "JackpotSound", src:"../../Assets/sound/jackpot.wav"},
     {id: "WinSound", src:"../../Assets/sound/win.wav"},
     {id: "BigWinSound", src:"../../Assets/sound/bigWin.wav"},
     {id: "LoseSound", src:"../../Assets/sound/lose.wav"},
+    {id: "GoodbyeSound", src:"../../Assets/sound/goodbye.wav"}
 ];
 
 function preload() {
@@ -89,7 +100,7 @@ function gameLoop(event: createjs.Event): void {
     stats.begin(); 
     
     // calling State's update method
-    currentScene.update(); 
+    currentScene.update(event); 
     
     // redraw/refresh stage every frame
     stage.update();
@@ -136,5 +147,4 @@ function changeScene(): void {
             break;
     }
 
-    console.log(currentScene.numChildren);
 }

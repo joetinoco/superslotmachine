@@ -3,7 +3,7 @@ module scenes {
     export class Menu extends objects.Scene {
         //PRIVATE INSTANCE VARIABLES ++++++++++++
         private _playButton: objects.Button;
-        private _welcomeLabel: objects.Label;
+        private _titleScreen: createjs.Bitmap;
         private _startupSound: objects.Sound;
         
         // CONSTRUCTOR ++++++++++++++++++++++
@@ -16,17 +16,11 @@ module scenes {
         // Start Method
         public start(): void {
             
-            // add the WELCOME Label to the scene
-            this._welcomeLabel = new objects.Label(
-                "SUPER MARIO SLOT MACHINE",
-                "20px 'Press Start 2P'",
-                "#000000",
-                config.Screen.CENTER_X,
-                config.Screen.CENTER_Y
-            );
-            this.addChild(this._welcomeLabel);
+            // add the title screen
+            this._titleScreen = new createjs.Bitmap(assets.getResult('TitleScreen'));
+            this.addChild(this._titleScreen);
             
-            // add the START button to the MENU scene
+            // add the PLAY button to the MENU scene
             this._playButton = new objects.Button(
                 "PlayButton",
                 config.Screen.CENTER_X,
@@ -34,7 +28,7 @@ module scenes {
                 true);
             this.addChild(this._playButton);
             
-            // START Button event listener
+            // PLAY Button event listener
             this._playButton.on("click", this._startButtonClick, this);
             
             // add this scene to the global stage container
@@ -46,15 +40,15 @@ module scenes {
         }
 
         // INTRO Scene updates here
-        public update(): void {
+        public update(event: createjs.Event): void {
 
         }
                
         //EVENT HANDLERS ++++++++++++++++++++
         
-        // START Button click event handler
+        // PLAY Button click event handler
         private _startButtonClick(event: createjs.MouseEvent) {
-            // Switch to the START Scene
+            // Switch to the game scene
             scene = config.Scene.SLOT_MACHINE;
             changeScene();
         }

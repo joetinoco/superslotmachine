@@ -1,9 +1,10 @@
-// GAME_OVER SCENE
+// GAME OVER SCENE
 module scenes {
     export class GameOver extends objects.Scene {
         //PRIVATE INSTANCE VARIABLES ++++++++++++
-        private _startOverButton: objects.Button;
-        private _gameOverLabel: objects.Label;
+        private _playButton: objects.Button;
+        private _gameOverScreen: createjs.Bitmap;
+        private _goodbyeSound: objects.Sound;
         
         // CONSTRUCTOR ++++++++++++++++++++++
         constructor() {
@@ -15,41 +16,39 @@ module scenes {
         // Start Method
         public start(): void {
             
-            // add the WELCOME Label to the scene
-            this._gameOverLabel = new objects.Label(
-                "GAME OVER",
-                "60px Consolas",
-                "#000000",
-                config.Screen.CENTER_X,
-                config.Screen.CENTER_Y
-            );
-            this.addChild(this._gameOverLabel);
+            // add the title screen
+            this._gameOverScreen = new createjs.Bitmap(assets.getResult('GameOverScreen'));
+            this.addChild(this._gameOverScreen);
             
-            // add the START button to the MENU scene
-            this._startOverButton = new objects.Button(
-                "StartButton",
-                config.Screen.CENTER_X,
-                config.Screen.CENTER_Y + 80,
+            // add a PLAY button to the MENU scene, in case the user wants to play more.
+            this._playButton = new objects.Button(
+                "PlayButton",
+                config.Screen.CENTER_X - 100,
+                config.Screen.CENTER_Y + 120,
                 true);
-            this.addChild(this._startOverButton);
+            this.addChild(this._playButton);
             
-            // START Button event listener
-            this._startOverButton.on("click", this._startOverButtonClick, this);
+            // PLAY Button event listener
+            this._playButton.on("click", this._playButtonClick, this);
             
             // add this scene to the global stage container
             stage.addChild(this);
+            
+            // Play the bye sound
+            this._goodbyeSound = new objects.Sound('GoodbyeSound');
+            this._goodbyeSound.play();
         }
 
-        // INTRO Scene updates here
-        public update(): void {
+        // GAME OVER Scene updates here
+        public update(event: createjs.Event): void {
 
         }
                
         //EVENT HANDLERS ++++++++++++++++++++
         
-        // START Button click event handler
-        private _startOverButtonClick(event: createjs.MouseEvent) {
-            // Switch to the START Scene
+        // PLAY Button click event handler
+        private _playButtonClick(event: createjs.MouseEvent) {
+            // Switch to the game scene
             scene = config.Scene.SLOT_MACHINE;
             changeScene();
         }

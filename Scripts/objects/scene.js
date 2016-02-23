@@ -18,7 +18,7 @@ var objects;
             stage.addChild(this);
         };
         // update game objects in my scene
-        Scene.prototype.update = function () {
+        Scene.prototype.update = function (event) {
         };
         return Scene;
     })(createjs.Container);

@@ -33,6 +33,9 @@ var scenes;
             // Quit button            
             this._quitButton = new objects.Button("QuitButton", 264, 218, false);
             this._quitButton.on('click', this._quitButtonClick, this);
+            // Spinning/stopping sounds
+            this._spinningSound = new objects.Sound('SpinningSound');
+            this._stoppingSound = new objects.Sound('StoppingSound');
             // Winning/losing sounds
             this._jackpotSound = new objects.Sound('JackpotSound');
             this._bigWinSound = new objects.Sound('BigWinSound');
@@ -41,6 +44,8 @@ var scenes;
             // prepare reel refresh elements
             this._reelReset = new createjs.Bitmap(assets.getResult('ReelReset'));
             this._reelMask = new createjs.Bitmap(assets.getResult('ReelMask'));
+            this._reelSpinTimes = new Array();
+            this._reelMoving = new Array();
             // reset entire game
             this._resetGame();
             // reset labels
@@ -49,7 +54,8 @@ var scenes;
             stage.addChild(this);
         };
         // Redraw scene and update elements
-        SlotMachine.prototype.update = function () {
+        SlotMachine.prototype.update = function (event) {
+            var reelsMoving = false;
             this.removeAllChildren();
             // redraw BG and buttons
             this.addChild(this._backgroundImage);
@@ -59,12 +65,31 @@ var scenes;
             this.addChild(this._spinButton);
             this.addChild(this._resetButton);
             this.addChild(this._quitButton);
-            // redraw reel
             this.addChild(this._reelReset);
-            for (var i = 0; i < 3; i++) {
-                this.addChild(this._reel1[i]);
-                this.addChild(this._reel2[i]);
-                this.addChild(this._reel3[i]);
+            // redraw reels
+            if (this._reelMoving[0]) {
+                reelsMoving = true;
+                this._animateReel(0, event);
+            }
+            else {
+                for (var i = 0; i < 3; i++)
+                    this.addChild(this._reel1[i]);
+            }
+            if (this._reelMoving[1]) {
+                reelsMoving = true;
+                this._animateReel(1, event);
+            }
+            else {
+                for (var i = 0; i < 3; i++)
+                    this.addChild(this._reel2[i]);
+            }
+            if (this._reelMoving[2]) {
+                reelsMoving = true;
+                this._animateReel(2, event);
+            }
+            else {
+                for (var i = 0; i < 3; i++)
+                    this.addChild(this._reel3[i]);
             }
             this.addChild(this._reelMask);
             // redraw labels
@@ -72,7 +97,11 @@ var scenes;
             this.addChild(this._betsLabel);
             this.addChild(this._winsLabel);
             // Update screen elements
-            this._updateBetButtons();
+            if (reelsMoving) {
+                this._disableBetButtons();
+            }
+            else
+                this._updateBetButtons();
             this._updateLabels();
         };
         // PRIVATE METHODS +++++++++++++++++++
@@ -82,6 +111,12 @@ var scenes;
             this._reel1 = new Array();
             this._reel2 = new Array();
             this._reel3 = new Array();
+            this._reelMoving[0] = false;
+            this._reelMoving[1] = false;
+            this._reelMoving[2] = false;
+            this._reelSpinTimes[0] = SlotMachine.defaultSpinTime;
+            this._reelSpinTimes[1] = SlotMachine.defaultSpinTime * 2;
+            this._reelSpinTimes[2] = SlotMachine.defaultSpinTime * 3;
             this._bet1Button.enableButton();
             this._bet2Button.enableButton();
             this._bet3Button.enableButton();
@@ -90,6 +125,35 @@ var scenes;
             this._bets = 0;
             this._betAmount = 0;
             this._wins = 0;
+        };
+        // Display a spinning reel animation
+        SlotMachine.prototype._animateReel = function (r, event) {
+            var delta = Math.round(event.delta);
+            this._reelSpinTimes[r] -= delta;
+            // Check if the wheel span for long enough
+            if (this._reelSpinTimes[r] <= 0) {
+                this._reelMoving[r] = false;
+                // Play stopping sound (reels 1 and 2 only)
+                if (r != 2)
+                    this._stoppingSound.play();
+                this._reelSpinTimes[r] = SlotMachine.defaultSpinTime * (r + 1);
+            }
+            else {
+                // Determine which frame to display for the animation
+                // based on the remaining time.
+                var frame;
+                frame = Math.round((this._reelSpinTimes[r] /
+                    (SlotMachine.defaultSpinTime / 15)) % 2 + 1);
+                var spinFrame = new objects.ReelItem("Spin" + frame, SlotMachine.reelXcoords[r], SlotMachine.reelYcoords[0] + 18);
+                this.addChild(spinFrame);
+            }
+            // If all reels stopped, stop spinning audio and calculate earnings.
+            if (this._reelMoving[0] === false &&
+                this._reelMoving[1] === false &&
+                this._reelMoving[2] === false) {
+                this._spinningSound.stop();
+                this._calculateEarnings();
+            }
         };
         // update labels for money, bets, etc.
         SlotMachine.prototype._updateLabels = function () {
@@ -125,6 +189,13 @@ var scenes;
                 this._spinButton.enableButton();
             }
         };
+        // Disable all buttons (used when the reels are spinning)
+        SlotMachine.prototype._disableBetButtons = function () {
+            this._bet3Button.disableButton();
+            this._bet2Button.disableButton();
+            this._bet1Button.disableButton();
+            this._spinButton.disableButton();
+        };
         // Place a bet
         SlotMachine.prototype._placeBet = function (amount) {
             if (this._money >= amount) {
@@ -134,7 +205,7 @@ var scenes;
                 }
                 else {
                     // 'Reimburses' the previous bet before placing a new one
-                    // (e.g., user clicked 'bet 1', then 'bet 2')
+                    // (for when the user clicks 'bet 1', then 'bet 2' instead)
                     this._money += this._betAmount;
                 }
                 this._betAmount = amount;
@@ -190,12 +261,32 @@ var scenes;
                     }
                 }
             }
-            // Pay back user and count wins
-            this._money += earnings;
-            if (earnings > 0)
+            // Play SFX
+            if (earnings === SlotMachine.jackpotAmount) {
+                // User won the jackpot
+                console.log('JACKPOT');
+                this._jackpotSound.play();
                 this._wins++;
-            // Return results
-            return earnings;
+            }
+            else if (earnings > 20) {
+                // User won big
+                console.log('User won ' + earnings);
+                this._bigWinSound.play();
+                this._wins++;
+            }
+            else if (earnings > 0) {
+                // User won
+                console.log('User won ' + earnings);
+                this._winSound.play();
+                this._wins++;
+            }
+            else {
+                // User did not win
+                console.log('No win');
+                this._loseSound.play();
+            }
+            // Pay back user
+            this._money += earnings;
         };
         // Get a random reel item
         SlotMachine.prototype._getRandomReelItem = function () {
@@ -222,7 +313,7 @@ var scenes;
         };
         SlotMachine.prototype._spinButtonClick = function (event) {
             if (this._spinButton.enabled) {
-                // Randomize all three reels in all positions    
+                // Randomize all three reel results in all positions    
                 for (var i = 0; i < 3; i++) {
                     this._reel1[i] = new objects.ReelItem(this._getRandomReelItem(), SlotMachine.reelXcoords[0], SlotMachine.reelYcoords[i]);
                     this._reel2[i] = new objects.ReelItem(this._getRandomReelItem(), SlotMachine.reelXcoords[1], SlotMachine.reelYcoords[i]);
@@ -231,35 +322,22 @@ var scenes;
                     this.addChild(this._reel2[i]);
                     this.addChild(this._reel3[i]);
                 }
-                // Calculate earnings
-                var amountWon = this._calculateEarnings();
-                if (amountWon === SlotMachine.jackpotAmount) {
-                    // User won the jackpot
-                    console.log('JACKPOT');
-                    this._jackpotSound.play();
-                }
-                if (amountWon > 20) {
-                    // User won big
-                    console.log('User won ' + amountWon);
-                    this._bigWinSound.play();
-                }
-                else if (amountWon > 0) {
-                    // User won
-                    console.log('User won ' + amountWon);
-                    this._winSound.play();
-                }
-                else {
-                    // User did not win
-                    console.log('No win');
-                    this._loseSound.play();
-                }
+                // Trigger the wheel motion animation and SFX
+                this._reelMoving[0] = true;
+                this._reelMoving[1] = true;
+                this._reelMoving[2] = true;
+                this._spinningSound.play(-1); // -1 means loop indefinitely 
             }
         };
         SlotMachine.prototype._resetButtonClick = function (event) {
+            this._betButtonSound.play();
             this._resetGame();
         };
         SlotMachine.prototype._quitButtonClick = function (event) {
-            // TODO: Quit game.
+            this._betButtonSound.play();
+            // Switch to the GAME OVER Scene
+            scene = config.Scene.GAME_OVER;
+            changeScene();
         };
         // STATIC PROPERTIES
         SlotMachine.reelItems = ['Blank', 'Fruit', 'Mushroom', 'Coin', 'Yoshi', 'Mario', 'Star'];
@@ -267,6 +345,7 @@ var scenes;
         SlotMachine.reelYcoords = [49, 87, 125];
         SlotMachine.jackpotAmount = 1500;
         SlotMachine.startingPlayerAmount = 30;
+        SlotMachine.defaultSpinTime = 600; // in miliseconds
         return SlotMachine;
     })(objects.Scene);
     scenes.SlotMachine = SlotMachine;

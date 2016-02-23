@@ -13,7 +13,7 @@ module objects {
         }
         
         // update game objects in my scene
-        public update():void {
+        public update(event: createjs.Event):void {
             
         }
     }
