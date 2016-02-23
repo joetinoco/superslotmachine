@@ -1,3 +1,6 @@
-# COMP397-W2016-SlotMachineDemo
+# Super Slot Machine
 
-COMP397 The Slot Machine Demo project for Web Game Programming @ Centennial
+Slot machine game assignment for Web Game Programming @ Centennial
+
+by Joseph Tinoco - Winter 2016
+
