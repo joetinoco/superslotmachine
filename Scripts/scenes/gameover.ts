@@ -20,7 +20,7 @@ module scenes {
             this._gameOverScreen = new createjs.Bitmap(assets.getResult('GameOverScreen'));
             this.addChild(this._gameOverScreen);
             
-            // add a PLAY button to the MENU scene, in case the user wants to play more.
+            // add a PLAY button to the scene, in case the user wants to play more.
             this._playButton = new objects.Button(
                 "PlayButton",
                 config.Screen.CENTER_X - 100,

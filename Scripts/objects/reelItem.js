@@ -5,9 +5,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var objects;
 (function (objects) {
+    // REELITEM CLASS ++++++++++++++++++++++++++
     var ReelItem = (function (_super) {
         __extends(ReelItem, _super);
-        //CONSTRUCTOR
+        // CONSTRUCTOR +++++++++++++++++++++
         function ReelItem(pathString, x, y) {
             _super.call(this, assets.getResult(pathString));
             this.itemName = pathString;
