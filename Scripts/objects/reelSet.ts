@@ -19,13 +19,9 @@ module objects {
 
         private _spinningSound: objects.Sound;
         private _stoppingSound: objects.Sound;
-        private _jackpotSound: objects.Sound;
-        private _winSound: objects.Sound;
-        private _bigWinSound: objects.Sound;
-        private _loseSound: objects.Sound;
         
         // STATIC PROPERTIES
-        static reelItems = ['Blank', 'Fruit', 'Mushroom', 'Coin', 'Yoshi', 'Mario', 'Star'];
+        public static reelItems = ['Blank', 'Fruit', 'Mushroom', 'Coin', 'Yoshi', 'Mario', 'Star'];
         static reelXcoords = [38, 91, 144];
         static reelYcoords = [49, 87, 125];
         static defaultSpinTime: number = 600; // in miliseconds
@@ -48,12 +44,32 @@ module objects {
             // Spinning/stopping sounds
             this._spinningSound = new objects.Sound('SpinningSound');
             this._stoppingSound = new objects.Sound('StoppingSound');
-            
-            // Winning/losing sounds
-            this._jackpotSound = new objects.Sound('JackpotSound');
-            this._bigWinSound = new objects.Sound('BigWinSound');
-            this._winSound = new objects.Sound('WinSound');
-            this._loseSound = new objects.Sound('LoseSound');
+
+        }
+
+        // Make the reels start spinning
+        public spinReels() {
+            // Randomize all three reel results in all positions    
+            for (var i: number = 0; i < 3; i++) {
+                this._reel1[i] = new objects.ReelItem(this._getRandomReelItem(),
+                    ReelSet.reelXcoords[0],
+                    ReelSet.reelYcoords[i]);
+                this._reel2[i] = new objects.ReelItem(this._getRandomReelItem(),
+                    ReelSet.reelXcoords[1],
+                    ReelSet.reelYcoords[i]);
+                this._reel3[i] = new objects.ReelItem(this._getRandomReelItem(),
+                    ReelSet.reelXcoords[2],
+                    ReelSet.reelYcoords[i]);
+                this.addChild(this._reel1[i]);
+                this.addChild(this._reel2[i]);
+                this.addChild(this._reel3[i]);
+            }
+                
+            // Trigger the wheel motion animation and SFX
+            this._reelMoving[0] = true;
+            this._reelMoving[1] = true;
+            this._reelMoving[2] = true;
+            this._spinningSound.play(-1); // -1 means loop indefinitely 
         }
         
         // Redraw scene and update elements
@@ -148,12 +164,15 @@ module objects {
                 this.addChild(spinFrame);
             }
             
-            // If all reels stopped, stop spinning audio
+            // If all reels stopped...
             if (this._reelMoving[0] === false &&
                 this._reelMoving[1] === false &&
                 this._reelMoving[2] === false) {
+                // Stop audio
                 this.reelsMoving = false;
                 this._spinningSound.stop();
+                // Trigger the spin finish event
+                this.dispatchEvent("spinComplete");
             }
         }
 

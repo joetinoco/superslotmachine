@@ -7,6 +7,7 @@
 /// <reference path="../objects/button.ts" />
 /// <reference path="../objects/scene.ts" />
 /// <reference path="../objects/reelItem.ts" />
+/// <reference path="../objects/reelSet.ts" />
 /// <reference path="../objects/sound.ts" />
 
 /// <reference path="../scenes/gameover.ts" />
