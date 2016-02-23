@@ -89,7 +89,6 @@ module scenes {
 
         // Redraw scene and update elements
         public update(event: createjs.Event): void {
-            var reelsMoving: boolean = false;
 
             this.removeAllChildren();
             
@@ -126,7 +125,7 @@ module scenes {
         // Reset game
         private _resetGame(): void {
             console.log('Resetting game');
-            this._reels.resetReel();
+            this._reels.resetReels();
             this._bet1Button.enableButton();
             this._bet2Button.enableButton();
             this._bet3Button.enableButton();
@@ -208,12 +207,14 @@ module scenes {
             }
         }
         
+        // EVENT HANDLERS +++++++++++++++
+        
         // Calculate earnings (if any)
         private _calculateEarnings(): void {
             var bet: number = this._betAmount;
             var earnings: number = 0;
             
-            // 'Spend' the player money
+            // 'Collect' the player money
             this._betAmount = 0;
 
             var betline: string[] = this._reels.betLine();
@@ -225,13 +226,13 @@ module scenes {
                     case 'Blank':
                         earnings = 0;
                         break;
-                    case 'Fruit':
+                    case 'Coin':
                         earnings = 10 * bet;
                         break;
                     case 'Mushroom':
                         earnings = 15 * bet;
                         break;
-                    case 'Coin':
+                    case 'Fruit':
                         earnings = 20 * bet;
                         break;
                     case 'Yoshi':
@@ -246,9 +247,9 @@ module scenes {
                 }
 
             } else {
-                // Scores the amount of single fruits, if any
+                // Scores the amount of single coins, if any
                 for (var i: number = 0; i < 3; i++) {
-                    if (betline[i] === 'Fruit') {
+                    if (betline[i] === 'Coin') {
                         if (earnings === 0) earnings = 2 * bet;
                         else earnings = 5 * bet;
                     }
@@ -280,8 +281,7 @@ module scenes {
             // Pay back user
             this._money += earnings;
         }
-        
-        // EVENT HANDLERS +++++++++++++++
+
         private _bet1ButtonClick(event: createjs.MouseEvent): void {
             if (this._bet1Button.enabled) {
                 this._betButtonSound.play();

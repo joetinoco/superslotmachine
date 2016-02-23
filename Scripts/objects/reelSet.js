@@ -8,7 +8,7 @@ var objects;
     // ReelSet Class
     // +++++++++++++
     //
-    // A set of three reels 
+    // A set of three animated reels 
     //
     var ReelSet = (function (_super) {
         __extends(ReelSet, _super);
@@ -79,8 +79,8 @@ var objects;
             this.addChild(this._reelMask);
         };
         // Reset reels
-        ReelSet.prototype.resetReel = function () {
-            console.log('Resetting reel');
+        ReelSet.prototype.resetReels = function () {
+            console.log('Resetting reels');
             this._reel1 = new Array();
             this._reel2 = new Array();
             this._reel3 = new Array();

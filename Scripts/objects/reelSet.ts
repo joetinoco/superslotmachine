@@ -2,7 +2,7 @@ module objects {
     // ReelSet Class
     // +++++++++++++
     //
-    // A set of three reels 
+    // A set of three animated reels 
     //
     export class ReelSet extends objects.Scene {
         //PUBLIC INSTANCE VARIABLES +++++++++++++
@@ -110,8 +110,8 @@ module objects {
         }
         
         // Reset reels
-        public resetReel(): void {
-            console.log('Resetting reel');
+        public resetReels(): void {
+            console.log('Resetting reels');
             this._reel1 = new Array();
             this._reel2 = new Array();
             this._reel3 = new Array();

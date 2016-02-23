@@ -50,7 +50,6 @@ var scenes;
         };
         // Redraw scene and update elements
         SlotMachine.prototype.update = function (event) {
-            var reelsMoving = false;
             this.removeAllChildren();
             // redraw BG and buttons
             this.addChild(this._backgroundImage);
@@ -80,7 +79,7 @@ var scenes;
         // Reset game
         SlotMachine.prototype._resetGame = function () {
             console.log('Resetting game');
-            this._reels.resetReel();
+            this._reels.resetReels();
             this._bet1Button.enableButton();
             this._bet2Button.enableButton();
             this._bet3Button.enableButton();
@@ -147,11 +146,12 @@ var scenes;
                 this._money -= amount;
             }
         };
+        // EVENT HANDLERS +++++++++++++++
         // Calculate earnings (if any)
         SlotMachine.prototype._calculateEarnings = function () {
             var bet = this._betAmount;
             var earnings = 0;
-            // 'Spend' the player money
+            // 'Collect' the player money
             this._betAmount = 0;
             var betline = this._reels.betLine();
             // Scores sequences of same figures
@@ -160,13 +160,13 @@ var scenes;
                     case 'Blank':
                         earnings = 0;
                         break;
-                    case 'Fruit':
+                    case 'Coin':
                         earnings = 10 * bet;
                         break;
                     case 'Mushroom':
                         earnings = 15 * bet;
                         break;
-                    case 'Coin':
+                    case 'Fruit':
                         earnings = 20 * bet;
                         break;
                     case 'Yoshi':
@@ -181,9 +181,9 @@ var scenes;
                 }
             }
             else {
-                // Scores the amount of single fruits, if any
+                // Scores the amount of single coins, if any
                 for (var i = 0; i < 3; i++) {
-                    if (betline[i] === 'Fruit') {
+                    if (betline[i] === 'Coin') {
                         if (earnings === 0)
                             earnings = 2 * bet;
                         else
@@ -218,7 +218,6 @@ var scenes;
             // Pay back user
             this._money += earnings;
         };
-        // EVENT HANDLERS +++++++++++++++
         SlotMachine.prototype._bet1ButtonClick = function (event) {
             if (this._bet1Button.enabled) {
                 this._betButtonSound.play();
