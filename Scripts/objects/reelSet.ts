@@ -74,7 +74,8 @@ module objects {
         
         // Redraw scene and update elements
         public update(event: createjs.Event): void {
-            var reelsMoving: boolean = false;
+            
+            this.removeAllChildren();
             
             // redraw reel background
             this.addChild(this._reelReset);

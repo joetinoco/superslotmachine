@@ -47,7 +47,7 @@ var objects;
         };
         // Redraw scene and update elements
         ReelSet.prototype.update = function (event) {
-            var reelsMoving = false;
+            this.removeAllChildren();
             // redraw reel background
             this.addChild(this._reelReset);
             // redraw reels
