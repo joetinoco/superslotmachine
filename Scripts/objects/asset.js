@@ -1,6 +1,9 @@
 var objects;
 (function (objects) {
     // ASSET CLASS ++++++++++++++++++++++++++
+    //
+    // Used to preload and store game assets
+    // 
     var Asset = (function () {
         // CONSTRUCTOR +++++++++++++++++++++
         function Asset(id, src) {

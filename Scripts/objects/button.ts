@@ -1,5 +1,10 @@
 ﻿module objects {
     export class Button extends createjs.Bitmap {
+        // BUTTON CLASS +++++++++++++++++++++
+        //
+        // Implements all types of buttons on the user interface
+        //
+        
         //PUBLIC INSTANCE VARIABLES
         public enabled: boolean;
         
@@ -9,11 +14,13 @@
             this.x = x;
             this.y = y;
             
+            // Center a button around the X/Y coords
             if (this.isCentered){
                 this.regX = this.getBounds().width * 0.5;
                 this.regY = this.getBounds().height * 0.5;
             } 
 
+            // Apply a simple mouseover effect
             this.on("mouseover", this.overButton, this);
             this.on("mouseout", this.outButton, this);
             this.enabled = true;
@@ -35,7 +42,7 @@
             } else event.currentTarget.alpha = 0.3;
         }
         
-        // Enables/disables a button
+        // Enable/disable a button
         public disableButton(): void {
           this.alpha = 0.3;
           this.enabled = false;

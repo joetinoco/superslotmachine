@@ -1,5 +1,8 @@
 module objects {
     // REELITEM CLASS ++++++++++++++++++++++++++
+    //
+    // Represents a position of the reel, with an assigned image ("fruit") or a blank.
+    //
     export class ReelItem extends createjs.Bitmap {
         //PUBLIC INSTANCE VARIABLES
         public itemName: string;

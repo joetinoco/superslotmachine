@@ -5,7 +5,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var objects;
 (function (objects) {
-    // Scene Class
+    // SCENE CLASS ++++++++++++++++++++++++++++++
+    //
+    // Represents a game scene as a CreateJS container
+    //
     var Scene = (function (_super) {
         __extends(Scene, _super);
         // CONSTRUCTOR +++++++++++++++++++++++++++++

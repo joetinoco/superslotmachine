@@ -6,6 +6,9 @@ var __extends = (this && this.__extends) || function (d, b) {
 var objects;
 (function (objects) {
     // REELITEM CLASS ++++++++++++++++++++++++++
+    //
+    // Represents a position of the reel, with an assigned image ("fruit") or a blank.
+    //
     var ReelItem = (function (_super) {
         __extends(ReelItem, _super);
         // CONSTRUCTOR +++++++++++++++++++++

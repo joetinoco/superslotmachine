@@ -1,6 +1,11 @@
 // GAME OVER SCENE
 module scenes {
     export class GameOver extends objects.Scene {
+        // GAMEOVER SCENE ++++++++++++++++++++++++
+        //
+        // Display a "thank you" message to the user
+        // 
+        
         //PRIVATE INSTANCE VARIABLES ++++++++++++
         private _playButton: objects.Button;
         private _gameOverScreen: createjs.Bitmap;

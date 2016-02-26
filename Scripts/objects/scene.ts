@@ -1,5 +1,8 @@
 module objects {
-    // Scene Class
+    // SCENE CLASS ++++++++++++++++++++++++++++++
+    //
+    // Represents a game scene as a CreateJS container
+    //
     export class Scene extends createjs.Container {
         // CONSTRUCTOR +++++++++++++++++++++++++++++
         constructor() {

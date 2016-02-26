@@ -1,0 +1,10 @@
+GitHub repo (source code) - https://github.com/joetinoco/TheDatingAdventure
+
+Cloud deployment:
+
+http://josetinoco.com/thedatingadventure/ 
+
+http://mydatingadventure.azurewebsites.net
+
+NOTE: at the time of this submission, my Azure account got corrupted and I cannot access any of my apps.
+See -> http://imgur.com/Ei0kK3z

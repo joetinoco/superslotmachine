@@ -1,6 +1,11 @@
 // MENU SCENE
 module scenes {
     export class Menu extends objects.Scene {
+        // MENU SCENE ++++++++++++++++++++++++++++
+        //
+        // Initial game screen with a "play" button
+        //
+        
         //PRIVATE INSTANCE VARIABLES ++++++++++++
         private _playButton: objects.Button;
         private _titleScreen: createjs.Bitmap;

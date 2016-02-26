@@ -1,4 +1,16 @@
 /// <reference path = "_reference.ts" />
+/*
+
+    SUPER SLOT MACHINE
+    ==================
+    
+    Developed as a COMP397 (Web Game Programming) assignment.
+    
+    Created and programmed by Joseph Tinoco - Winter 2016
+    
+    Contains excerpts from https://github.com/CentennialCollege/COMP397-W2016-SlotMachineDemo
+
+*/
 // global variables
 var assets;
 var canvas;
@@ -113,7 +125,7 @@ function changeScene() {
             console.log("Starting SLOT_MACHINE Scene");
             break;
         case config.Scene.GAME_OVER:
-            // show the game OVER scene
+            // show the GAME OVER scene
             stage.removeAllChildren();
             gameOver = new scenes.GameOver();
             currentScene = gameOver;

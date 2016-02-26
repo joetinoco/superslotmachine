@@ -1,6 +1,10 @@
-// SLOT_MACHINE SCENE
 module scenes {
     export class SlotMachine extends objects.Scene {
+        // SLOT MACHINE SCENE ++++++++++++++++++++++++++
+        //
+        // Represents the slot machine play interface.
+        //
+        
         //PRIVATE INSTANCE VARIABLES ++++++++++++
         private _backgroundImage: createjs.Bitmap;
         private _bet1Button: objects.Button;
@@ -13,14 +17,17 @@ module scenes {
         private _betsLabel: objects.Label;
         private _winsLabel: objects.Label;
 
+        // Reels (in a separate object)
         private _reels: objects.ReelSet;
 
+        // Sounds used in this scene
         private _betButtonSound: objects.Sound;
         private _jackpotSound: objects.Sound;
         private _winSound: objects.Sound;
         private _bigWinSound: objects.Sound;
         private _loseSound: objects.Sound;
 
+        // Gameplay parameters
         private _money: number;
         private _bets: number;
         private _betAmount: number;
@@ -40,6 +47,7 @@ module scenes {
         // Start Method
         public start(): void {
 
+            // Set the scene background image (the machine itself)
             this._backgroundImage = new createjs.Bitmap(assets.getResult('SlotMachine'));
             
             // Bet buttons
@@ -74,9 +82,11 @@ module scenes {
             
             // Reels
             this._reels = new objects.ReelSet();
+            
+            // Event handler for when the reels stop spinning
             this._reels.on('spinComplete', this._calculateEarnings, this);
             
-            // reset entire game
+            // Prepare gameplay: first, reset the entire game
             this._resetGame();
             
             // reset labels
@@ -92,7 +102,7 @@ module scenes {
 
             this.removeAllChildren();
             
-            // redraw BG and buttons
+            // Redraw BG and buttons
             this.addChild(this._backgroundImage);
             this.addChild(this._bet1Button);
             this.addChild(this._bet2Button);
@@ -105,7 +115,7 @@ module scenes {
             this.addChild(this._reels);
             this._reels.update(event);
             
-            // redraw labels
+            // Redraw labels
             this.addChild(this._moneyLabel);
             this.addChild(this._betsLabel);
             this.addChild(this._winsLabel);
@@ -122,14 +132,20 @@ module scenes {
         
         // PRIVATE METHODS +++++++++++++++++++
         
-        // Reset game
+        // Reset all game parameters
         private _resetGame(): void {
             console.log('Resetting game');
+            
+            // Reset reels
             this._reels.resetReels();
+            
+            // Reset button statuses
             this._bet1Button.enableButton();
             this._bet2Button.enableButton();
             this._bet3Button.enableButton();
             this._spinButton.disableButton(); // User must bet first
+            
+            // Reset game parameters
             this._money = SlotMachine.startingPlayerAmount;
             this._bets = 0;
             this._betAmount = 0;
@@ -138,16 +154,21 @@ module scenes {
         
         // update labels for money, bets, etc.
         private _updateLabels() {
+            // Player money label
             this._moneyLabel = new objects.Label(
                 this._money.toString(),
                 "13px 'Press Start 2P'",
                 "#FFFFFF",
                 13, 17, false);
+            
+            // Bets label
             this._betsLabel = new objects.Label(
                 this._bets.toString(),
                 "13px 'Press Start 2P'",
                 "#FFFFFF",
                 94, 17, false);
+            
+            // Player wins counter label
             this._winsLabel = new objects.Label(
                 this._wins.toString(),
                 "13px 'Press Start 2P'",
@@ -155,14 +176,17 @@ module scenes {
                 145, 17, false);
         }
         
-        // Update bet button status according to player money
+        // Update button status according to player money
         private _updateBetButtons() {
+            
+            // Player can't bet 3 if he does not have 3 credits
             if (this._money < 3) {
                 this._bet3Button.disableButton();
             } else {
                 this._bet3Button.enableButton();
             }
 
+            // Same thing for "Bet 2" and "Bet 1"
             if (this._money < 2) {
                 this._bet2Button.disableButton();
             } else {
@@ -183,7 +207,7 @@ module scenes {
             }
         }
         
-        // Disable all buttons (used when the reels are spinning)
+        // Disable all buttons (for when the reels are spinning)
         private _disableBetButtons() {
             this._bet3Button.disableButton();
             this._bet2Button.disableButton();
@@ -193,6 +217,7 @@ module scenes {
         
         // Place a bet
         private _placeBet(amount: number): void {
+            // Check if the user has the bet amount
             if (this._money >= amount) {
                 if (this._betAmount === 0) {
                     // Count this bet
@@ -202,7 +227,11 @@ module scenes {
                     // (for when the user clicks 'bet 1', then 'bet 2' instead)
                     this._money += this._betAmount;
                 }
+                
+                // Set up the bet amount in the machine
                 this._betAmount = amount;
+                
+                // Subtract the bet from the player money
                 this._money -= amount;
             }
         }
@@ -217,9 +246,11 @@ module scenes {
             // 'Collect' the player money
             this._betAmount = 0;
 
+            // Get the bet line result from the reels object
             var betline: string[] = this._reels.betLine();
             
-            // Scores sequences of same figures
+            // Calculate results. 
+            // First, score sequences of same figures in the three reels
             if (betline[0] === betline[1] && betline[1] === betline[2]) {
 
                 switch (betline[0]) {
@@ -247,7 +278,7 @@ module scenes {
                 }
 
             } else {
-                // Scores the amount of single coins, if any
+                // Score the amount of single coins, if any
                 for (var i: number = 0; i < 3; i++) {
                     if (betline[i] === 'Coin') {
                         if (earnings === 0) earnings = 2 * bet;
@@ -256,7 +287,7 @@ module scenes {
                 }
             }
             
-            // Play SFX
+            // Play corresponding sounds
             if (earnings === SlotMachine.jackpotAmount) {
                 // User won the jackpot
                 console.log('JACKPOT');
@@ -282,6 +313,9 @@ module scenes {
             this._money += earnings;
         }
 
+        // BUTTON EVENT HANDLERS
+        
+        // Bet buttons: play a sound and place the corresponding bet
         private _bet1ButtonClick(event: createjs.MouseEvent): void {
             if (this._bet1Button.enabled) {
                 this._betButtonSound.play();
@@ -303,22 +337,34 @@ module scenes {
             }
         }
 
+        // "Spin" button
         private _spinButtonClick(event: createjs.MouseEvent): void {
             if (this._spinButton.enabled) {
                 this._reels.spinReels();
             }
         }
 
+        // "Reset" button
         private _resetButtonClick(event: createjs.MouseEvent): void {
-            this._betButtonSound.play();
-            this._resetGame();
+            // Prevents activation if the reels are spinning
+            // (otherwise the spin sound won't ever stop)
+            if (!this._reels.reelsMoving) {
+                this._betButtonSound.play();
+                this._resetGame();
+            }
+
         }
 
+        // "Quit" button
         private _quitButtonClick(event: createjs.MouseEvent): void {
-            this._betButtonSound.play();
-            // Switch to the GAME OVER Scene
-            scene = config.Scene.GAME_OVER;
-            changeScene();
+            // Prevents activation if the reels are spinning
+            // (otherwise the spin sound won't ever stop)
+            if (!this._reels.reelsMoving) {
+                this._betButtonSound.play();
+                // Switch to the GAME OVER Scene
+                scene = config.Scene.GAME_OVER;
+                changeScene();
+            }
         }
 
 

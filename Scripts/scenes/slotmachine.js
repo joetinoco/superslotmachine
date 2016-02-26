@@ -3,7 +3,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-// SLOT_MACHINE SCENE
 var scenes;
 (function (scenes) {
     var SlotMachine = (function (_super) {
@@ -15,6 +14,7 @@ var scenes;
         // PUBLIC METHODS +++++++++++++++++++++
         // Start Method
         SlotMachine.prototype.start = function () {
+            // Set the scene background image (the machine itself)
             this._backgroundImage = new createjs.Bitmap(assets.getResult('SlotMachine'));
             // Bet buttons
             this._bet1Button = new objects.Button("Bet1Button", 15, 195, false);
@@ -40,8 +40,9 @@ var scenes;
             this._loseSound = new objects.Sound('LoseSound');
             // Reels
             this._reels = new objects.ReelSet();
+            // Event handler for when the reels stop spinning
             this._reels.on('spinComplete', this._calculateEarnings, this);
-            // reset entire game
+            // Prepare gameplay: first, reset the entire game
             this._resetGame();
             // reset labels
             this._updateLabels();
@@ -51,7 +52,7 @@ var scenes;
         // Redraw scene and update elements
         SlotMachine.prototype.update = function (event) {
             this.removeAllChildren();
-            // redraw BG and buttons
+            // Redraw BG and buttons
             this.addChild(this._backgroundImage);
             this.addChild(this._bet1Button);
             this.addChild(this._bet2Button);
@@ -62,7 +63,7 @@ var scenes;
             // Update reel set
             this.addChild(this._reels);
             this._reels.update(event);
-            // redraw labels
+            // Redraw labels
             this.addChild(this._moneyLabel);
             this.addChild(this._betsLabel);
             this.addChild(this._winsLabel);
@@ -76,14 +77,17 @@ var scenes;
             this._updateLabels();
         };
         // PRIVATE METHODS +++++++++++++++++++
-        // Reset game
+        // Reset all game parameters
         SlotMachine.prototype._resetGame = function () {
             console.log('Resetting game');
+            // Reset reels
             this._reels.resetReels();
+            // Reset button statuses
             this._bet1Button.enableButton();
             this._bet2Button.enableButton();
             this._bet3Button.enableButton();
             this._spinButton.disableButton(); // User must bet first
+            // Reset game parameters
             this._money = SlotMachine.startingPlayerAmount;
             this._bets = 0;
             this._betAmount = 0;
@@ -91,18 +95,23 @@ var scenes;
         };
         // update labels for money, bets, etc.
         SlotMachine.prototype._updateLabels = function () {
+            // Player money label
             this._moneyLabel = new objects.Label(this._money.toString(), "13px 'Press Start 2P'", "#FFFFFF", 13, 17, false);
+            // Bets label
             this._betsLabel = new objects.Label(this._bets.toString(), "13px 'Press Start 2P'", "#FFFFFF", 94, 17, false);
+            // Player wins counter label
             this._winsLabel = new objects.Label(this._wins.toString(), "13px 'Press Start 2P'", "#FFFFFF", 145, 17, false);
         };
-        // Update bet button status according to player money
+        // Update button status according to player money
         SlotMachine.prototype._updateBetButtons = function () {
+            // Player can't bet 3 if he does not have 3 credits
             if (this._money < 3) {
                 this._bet3Button.disableButton();
             }
             else {
                 this._bet3Button.enableButton();
             }
+            // Same thing for "Bet 2" and "Bet 1"
             if (this._money < 2) {
                 this._bet2Button.disableButton();
             }
@@ -123,7 +132,7 @@ var scenes;
                 this._spinButton.enableButton();
             }
         };
-        // Disable all buttons (used when the reels are spinning)
+        // Disable all buttons (for when the reels are spinning)
         SlotMachine.prototype._disableBetButtons = function () {
             this._bet3Button.disableButton();
             this._bet2Button.disableButton();
@@ -132,6 +141,7 @@ var scenes;
         };
         // Place a bet
         SlotMachine.prototype._placeBet = function (amount) {
+            // Check if the user has the bet amount
             if (this._money >= amount) {
                 if (this._betAmount === 0) {
                     // Count this bet
@@ -142,7 +152,9 @@ var scenes;
                     // (for when the user clicks 'bet 1', then 'bet 2' instead)
                     this._money += this._betAmount;
                 }
+                // Set up the bet amount in the machine
                 this._betAmount = amount;
+                // Subtract the bet from the player money
                 this._money -= amount;
             }
         };
@@ -153,8 +165,10 @@ var scenes;
             var earnings = 0;
             // 'Collect' the player money
             this._betAmount = 0;
+            // Get the bet line result from the reels object
             var betline = this._reels.betLine();
-            // Scores sequences of same figures
+            // Calculate results. 
+            // First, score sequences of same figures in the three reels
             if (betline[0] === betline[1] && betline[1] === betline[2]) {
                 switch (betline[0]) {
                     case 'Blank':
@@ -181,7 +195,7 @@ var scenes;
                 }
             }
             else {
-                // Scores the amount of single coins, if any
+                // Score the amount of single coins, if any
                 for (var i = 0; i < 3; i++) {
                     if (betline[i] === 'Coin') {
                         if (earnings === 0)
@@ -191,7 +205,7 @@ var scenes;
                     }
                 }
             }
-            // Play SFX
+            // Play corresponding sounds
             if (earnings === SlotMachine.jackpotAmount) {
                 // User won the jackpot
                 console.log('JACKPOT');
@@ -218,6 +232,8 @@ var scenes;
             // Pay back user
             this._money += earnings;
         };
+        // BUTTON EVENT HANDLERS
+        // Bet buttons: play a sound and place the corresponding bet
         SlotMachine.prototype._bet1ButtonClick = function (event) {
             if (this._bet1Button.enabled) {
                 this._betButtonSound.play();
@@ -236,20 +252,31 @@ var scenes;
                 this._placeBet(3);
             }
         };
+        // "Spin" button
         SlotMachine.prototype._spinButtonClick = function (event) {
             if (this._spinButton.enabled) {
                 this._reels.spinReels();
             }
         };
+        // "Reset" button
         SlotMachine.prototype._resetButtonClick = function (event) {
-            this._betButtonSound.play();
-            this._resetGame();
+            // Prevents activation if the reels are spinning
+            // (otherwise the spin sound won't ever stop)
+            if (!this._reels.reelsMoving) {
+                this._betButtonSound.play();
+                this._resetGame();
+            }
         };
+        // "Quit" button
         SlotMachine.prototype._quitButtonClick = function (event) {
-            this._betButtonSound.play();
-            // Switch to the GAME OVER Scene
-            scene = config.Scene.GAME_OVER;
-            changeScene();
+            // Prevents activation if the reels are spinning
+            // (otherwise the spin sound won't ever stop)
+            if (!this._reels.reelsMoving) {
+                this._betButtonSound.play();
+                // Switch to the GAME OVER Scene
+                scene = config.Scene.GAME_OVER;
+                changeScene();
+            }
         };
         // STATIC PROPERTIES
         SlotMachine.jackpotAmount = 1500;

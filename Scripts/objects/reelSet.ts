@@ -1,6 +1,5 @@
 module objects {
-    // ReelSet Class
-    // +++++++++++++
+    // REELSET CLASS +++++++++++++++++++++++++
     //
     // A set of three animated reels 
     //
@@ -124,7 +123,7 @@ module objects {
             this._reelSpinTimes[2] = ReelSet.defaultSpinTime * 3;
         }
         
-        // Return the betline
+        // Return the current betline
         public betLine(): string[] {
             return [
                 this._reel1[1].itemName,
@@ -135,7 +134,7 @@ module objects {
         
         // PRIVATE METHODS +++++++++++++++++++
         
-        // Get a random reel item
+        // Get a random item for a reel position
         private _getRandomReelItem(): string {
             return ReelSet.reelItems[Math.floor(Math.random() * ReelSet.reelItems.length)];
         }
@@ -148,11 +147,12 @@ module objects {
             // Check if the wheel span for long enough
             if (this._reelSpinTimes[r] <= 0) {
                 this._reelMoving[r] = false;
-                // Play stopping sound (reels 1 and 2 only)
+                // Play stopping sound
+                // (reels 1 and 2 only, so as not to overlap with the reel result sound)
                 if (r != 2) this._stoppingSound.play();
                 this._reelSpinTimes[r] = ReelSet.defaultSpinTime * (r + 1);
             } else {
-                // Determine which frame to display for the animation
+                // Determine which frame to display for the animation,
                 // based on the remaining time.
                 var frame: number;
                 frame = Math.round(
